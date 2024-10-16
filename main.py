@@ -1,88 +1,73 @@
-class Animal:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
+from abc import ABC, abstractmethod
+import random
 
-    def make_sound(self):
-        print(f"{self.name} издает звук.")
 
-    def eat(self):
-        print(f"{self.name} ест.")
+class Weapon(ABC):
+    @abstractmethod
+    def attack(self):
+        pass
 
-class Bird(Animal):
-    def make_sound(self):
-        print(f"{self.name} чирикает.")
 
-    def fly(self):
-        print(f"{self.name} летает.")
+class Sword(Weapon):
+    def attack(self):
+        return "удар мечом"
 
-class Mammal(Animal):
-    def make_sound(self):
-        print(f"{self.name} издает звук млекопитающего.")
+class Bow(Weapon):
+    def attack(self):
+        return "выстрел из лука"
 
-    def run(self):
-        print(f"{self.name} бежит.")
+class Axe(Weapon):
+    def attack(self):
+        return "мощный удар топором"
 
-class Reptile(Animal):
-    def make_sound(self):
-        print(f"{self.name} шипит.")
 
-    def crawl(self):
-        print(f"{self.name} ползет.")
-
-def animal_sound(animals):
-    for animal in animals:
-        animal.make_sound()
-
-class Zoo:
+class Fighter:
     def __init__(self, name):
         self.name = name
-        self.animals = []
-        self.staff = []
+        self.weapon = None
 
-    def add_animal(self, animal):
-        if isinstance(animal, Animal):
-            self.animals.append(animal)
-            print(f"Животное {animal.name} добавлено в зоопарк.")
+    def change_weapon(self, weapon: Weapon):
+        self.weapon = weapon
+        print(f"{self.name} сменил оружие на {weapon.__class__.__name__}")
 
-    def add_staff(self, staff_member):
-        self.staff.append(staff_member)
-        print(f"Сотрудник {staff_member.name} добавлен в зоопарк.")
+    def attack(self):
+        if self.weapon:
+            print(f"{self.name} атакует: {self.weapon.attack()}")
+        else:
+            print(f"{self.name} безоружен")
 
-    def show_animals(self):
-        print(f"Животные в зоопарке {self.name}:")
-        for animal in self.animals:
-            print(f"{animal.name} ({animal.__class__.__name__}, {animal.age} лет)")
 
-class Staff:
-    def __init__(self, name):
+class Monster:
+    def __init__(self, name, health):
         self.name = name
+        self.health = health
 
-class ZooKeeper(Staff):
-    def feed_animal(self, animal):
-        if isinstance(animal, Animal):
-            print(f"{self.name} кормит {animal.name}.")
-            animal.eat()
+    def take_damage(self, damage):
+        self.health -= damage
+        print(f"{self.name} получает урон! Текущее здоровье: {self.health}")
+        if self.health <= 0:
+            print(f"{self.name} побежден!")
 
-class Veterinarian(Staff):
-    def heal_animal(self, animal):
-        if isinstance(animal, Animal):
-            print(f"{self.name} лечит {animal.name}.")
 
-zoo = Zoo("Городской зоопарк")
+def fight(fighter, monster):
+    damage = random.randint(10, 30)
+    print(f"{fighter.name} атакует монстра {monster.name}")
+    fighter.attack()
+    monster.take_damage(damage)
 
-zoo.add_animal(Bird("Попугай", 3))
-zoo.add_animal(Mammal("Лев", 5))
-zoo.add_animal(Reptile("Крокодил", 7))
 
-zoo.show_animals()
+fighter = Fighter("Рыцарь")
+monster = Monster("Дракон", 100)
 
-zoo_keeper = ZooKeeper("Иван")
-veterinarian = Veterinarian("Анна")
+sword = Sword()
+bow = Bow()
+axe = Axe()
 
-zoo.add_staff(zoo_keeper)
-zoo.add_staff(veterinarian)
+fighter.change_weapon(sword)
+fight(fighter, monster)
 
-zoo_keeper.feed_animal(zoo.animals[0])
-veterinarian.heal_animal(zoo.animals[1])
+fighter.change_weapon(bow)
+fight(fighter, monster)
 
+fighter.change_weapon(axe)
+fight(fighter, monster)
